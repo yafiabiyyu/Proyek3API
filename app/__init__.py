@@ -50,7 +50,7 @@ def create_app(config_name):
     jwt.init_app(app)
     migrate = Migrate(app, db)
 
-    from app.models import user_model
+    from app.models import user_model, alternatif_model
 
     @jwt.token_in_blacklist_loader
     def CheckIfTokenInBlacklist(decrypted_token):
