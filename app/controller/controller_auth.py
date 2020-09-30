@@ -17,10 +17,12 @@ DataLogin = api.model(
     "login",
     {
         "username": fields.String(
-            required=True, description="Username user yang akan menggunakan aplikasi"
+            required=True,
+            description="Username user yang akan menggunakan aplikasi",
         ),
         "password": fields.String(
-            required=True, description="Password user yang akan menggunakan aplikasi"
+            required=True,
+            description="Password user yang akan menggunakan aplikasi",
         ),
     },
 )
@@ -29,7 +31,8 @@ DataLogin = api.model(
 @api.route("/login")
 class LoginResource(Resource):
     @api.doc(
-        responses={200: "OK", 400: "Bad Request"}, description="Endpoint untuk login"
+        responses={200: "OK", 400: "Bad Request"},
+        description="Endpoint untuk login",
     )
     @api.expect(DataLogin)
     def post(self):
@@ -40,24 +43,31 @@ class LoginResource(Resource):
         except Exception as e:
             api.abort(400, e.__doc__)
 
+
 @api.route("/token/refresh")
 class TokenRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
         CurrentUser = get_jwt_identity()
         NewAccessToken = create_access_token(identity=CurrentUser)
-        return jsonify({'access_token':NewAccessToken})
+        return jsonify({"access_token": NewAccessToken})
 
 
-@api.route('/logout')
+@api.route("/logout")
 class UserLogout(Resource):
     @jwt_required
     def post(self):
-        jti = get_raw_jwt()['jti']
+        jti = get_raw_jwt()["jti"]
         try:
             RevokedToken = RevokedTokenModel(jti=jti)
             RevokedToken.saveToDb()
-            return jsonify({'status':'berhasil','message':'user berhasil logout'})
-        except:
-            return jsonify({'status':'gagal','message':'terjadi kesalahan'})
-
+            return jsonify(
+                {
+                    "status": "berhasil",
+                    "message": "user berhasil logout",
+                }
+            )
+        except Exception:
+            return jsonify(
+                {"status": "gagal", "message": "terjadi kesalahan"}
+            )
