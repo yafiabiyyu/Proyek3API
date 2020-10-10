@@ -8,6 +8,7 @@ from ..service.alternatif_service import (
     AddAlternatif,
     GetAllAlternatif,
     GetSpesificAlternatif,
+    UpdateAlternatif
 )
 
 
@@ -75,3 +76,17 @@ class AlternatifResourceByNIM(Resource):
             raise NotFound("Data alternatif tidak ditemukan")
         else:
             return DataAlternatifByNim
+
+    @api.doc(responses={200: "OK", 404: "Not Found"})
+    @api.expect(DataAlternatif)
+    def put(self, nim):
+        print(api.payload)        
+        try:
+            status, message = UpdateAlternatif(nim,api.payload)
+        except Exception as e:
+            api.abort(400,e.__doc__)
+        else:
+            if status:
+                return message
+            else:
+                return message

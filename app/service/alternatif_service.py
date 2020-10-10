@@ -46,3 +46,34 @@ def GetAllAlternatif():
 
 def GetSpesificAlternatif(data):
     return AlternatifModel.query.filter_by(nim=data).first()
+
+
+def UpdateAlternatif(nim, data):
+    GetData = AlternatifModel.query.get_or_404(nim)
+    if GetData is not None:
+        try:
+            GetData.nim = data["nim"]
+            GetData.nama = data["nama"]
+            GetData.alamat = data["alamat"]
+            GetData.jenis_kelamin = data["jenis_kelamin"]
+            db.session.commit()
+            message_object = {
+                "status": "berhasil",
+                "message": "data mahasiswa {} berhasil di perbarui".format(
+                    data["nama"]
+                ),
+            }
+            return True, message_object
+        except Exception as e:
+            db.session.rollback()
+            message_object = {
+                "status": "gagal",
+                "message": "Terjadi kesalahan saat memperbarui data",
+            }
+            return False, message_object
+    else:
+        message_object = {
+            "status": "gagal",
+            "message": "Data tidak ditemukan",
+        }
+        return False, message_object
