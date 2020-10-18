@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 import datetime
 import os
 
-
 # inisialisasi db dan bcrypt
 load_dotenv()
 db = SQLAlchemy()
@@ -50,7 +49,7 @@ def create_app(config_name):
     jwt.init_app(app)
     migrate = Migrate(app, db)
 
-    from app.models import user_model, alternatif_model
+    from app.models import user_model, alternatif_model, kriteria_model
 
     @jwt.token_in_blacklist_loader
     def CheckIfTokenInBlacklist(decrypted_token):

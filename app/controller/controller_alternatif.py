@@ -4,13 +4,7 @@ from flask_jwt_extended import jwt_required
 from werkzeug.exceptions import NotFound
 
 
-from ..service.alternatif_service import (
-    AddAlternatif,
-    GetAllAlternatif,
-    GetSpesificAlternatif,
-    UpdateAlternatif,
-)
-
+from ..service.alternatif_service import AlternatifService
 
 api = Namespace("alternatif", "Endpoint untuk Alternatif")
 DataAlternatif = api.model(
@@ -35,6 +29,8 @@ DataAlternatif = api.model(
     },
 )
 
+alternatif = AlternatifService()
+
 
 @api.route("/alternatif")
 class AlternatifResourceAll(Resource):
@@ -47,7 +43,7 @@ class AlternatifResourceAll(Resource):
     def post(self):
         try:
             GetAlternatifData = request.json
-            AlternatifSatus = AddAlternatif(GetAlternatifData)
+            AlternatifSatus = alternatif.AddAlternatif(GetAlternatifData)
             return jsonify(AlternatifSatus)
         except Exception as e:
             api.abort(400, e.__doc__)
@@ -60,7 +56,7 @@ class AlternatifResourceAll(Resource):
     @api.marshal_list_with(DataAlternatif, envelope="data")
     def get(self):
         try:
-            return GetAllAlternatif()
+            return alternatif.GetAllData()
         except Exception as e:
             api.abort(404, e.__doc__)
 
@@ -71,7 +67,7 @@ class AlternatifResourceByNIM(Resource):
     @api.doc(responses={200: "OK", 404: "Not Found"})
     @api.marshal_with(DataAlternatif)
     def get(self, nim):
-        DataAlternatifByNim = GetSpesificAlternatif(nim)
+        DataAlternatifByNim = alternatif.GetSpesificData(nim)
         if not DataAlternatifByNim:
             raise NotFound("Data alternatif tidak ditemukan")
         else:
@@ -82,7 +78,7 @@ class AlternatifResourceByNIM(Resource):
     def put(self, nim):
         print(api.payload)
         try:
-            status, message = UpdateAlternatif(nim, api.payload)
+            status, message = alternatif.UpdateData(nim, api.payload)
         except Exception as e:
             api.abort(400, e.__doc__)
         else:
